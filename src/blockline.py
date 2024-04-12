@@ -55,6 +55,8 @@ def markdown_to_html_node(md):
             parent.children.append(quote_to_html(block))
         elif block_to_block_type(block) == block_types.block_type_ulist:
             parent.children.append(ulist_to_html(block))
+        elif block_to_block_type(block) == block_types.block_type_olist:
+            parent.children.append(olist_to_html(block))
         elif block_to_block_type(block) == block_types.block_type_code:
             parent.children.append(code_to_html(block))
         elif block_to_block_type(block) == block_types.block_type_heading:
@@ -64,7 +66,7 @@ def markdown_to_html_node(md):
     return parent
 
 def quote_to_html(block):
-    print(block)
+    # print(block)
     children = []
     for line in block.split("\n"):
         children.extend(text_to_children(line.lstrip("> ")))
@@ -80,15 +82,15 @@ def ulist_to_html(block):
 def olist_to_html(block):
     html_items = []
     for line in block.split("\n"):
-        children = text_to_children(line[2:])
+        children = text_to_children(line[3:])
         html_items.append(ParentNode("li", children))
     return ParentNode("ol", html_items)
 
 def code_to_html(block):
-    lines = block.split("\n")[1:-1]
+    clean_code = block.replace("```", "").strip()
     html_items = []
-    children = text_to_children(lines[0])
-    return ParentNode("pre", [ParentNode("code", children)])
+    html_items.extend(text_to_children(clean_code))
+    return ParentNode("pre", [ParentNode("code", html_items)])
 
 def headings_to_html(block):
     # print(block)
